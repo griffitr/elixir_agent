@@ -187,12 +187,12 @@ defmodule NewRelic.Harvest.Collector.Protocol do
           :error,
           "#{params[:method]}: (#{status}) #{error} - " <>
             "#{exception["error_type"]} - #{exception["message"]} - " <>
-            "headers: [#{Enum.map(headers, fn {key, value} -> "#{key}: #{value} " end)}]"
+            "headers: #{inspect(headers)}"
         )
 
       _ ->
         NewRelic.log(:error, "#{params[:method]}: (#{status}) #{error} - #{body} - " <>
-        "headers: [#{Enum.map(headers, fn {key, value} -> "#{key}: #{value} " end)}]"
+        "headers: #{inspect(headers)}"
         )
     end
   end
