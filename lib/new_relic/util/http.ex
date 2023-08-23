@@ -9,7 +9,7 @@ defmodule NewRelic.Util.HTTP do
 
     with {:ok, {{_, status_code, _}, _headers, body}} <-
            :httpc.request(:post, request, http_options(), []) do
-      {:ok, %{status_code: status_code, body: to_string(body)}}
+      {:ok, %{status_code: status_code, headers: headers, body: to_string(body)}}
     end
   end
 

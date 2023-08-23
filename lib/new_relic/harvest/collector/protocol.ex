@@ -60,7 +60,7 @@ defmodule NewRelic.Harvest.Collector.Protocol do
 
   defp retry_call({:ok, response}, _params, _payload), do: {:ok, response}
 
-  @retryable [408, 429, 500, 503]
+  @retryable [408, 429, 500, 503, 504]
   defp retry_call({:error, status}, params, payload) when status in @retryable,
     do: issue_call(params, payload)
 
@@ -114,9 +114,9 @@ defmodule NewRelic.Harvest.Collector.Protocol do
     {:error, :force_disconnect}
   end
 
-  defp parse_http_response({:ok, %{status_code: status, body: body}}, params) do
+  defp parse_http_response({:ok, %{status_code: status, headers: headers, body: body}}, params) do
     NewRelic.report_metric({:supportability, :collector}, status: status)
-    log_error(status, :unexpected_response, params, body)
+    log_error(status, :unexpected_response, params, body, headers)
     {:error, status}
   end
 
@@ -177,6 +177,23 @@ defmodule NewRelic.Harvest.Collector.Protocol do
 
       _ ->
         NewRelic.log(:error, "#{params[:method]}: (#{status}) #{error} - #{body}")
+    end
+  end
+
+  defp log_error(status, error, params, body, headers) do
+    case Jason.decode(body) do
+      {:ok, %{"exception" => exception}} ->
+        NewRelic.log(
+          :error,
+          "#{params[:method]}: (#{status}) #{error} - " <>
+            "#{exception["error_type"]} - #{exception["message"]} - " <>
+            "headers: #{inspect(headers)}"
+        )
+
+      _ ->
+        NewRelic.log(:error, "#{params[:method]}: (#{status}) #{error} - #{body} - " <>
+        "headers: #{inspect(headers)}"
+        )
     end
   end
 
