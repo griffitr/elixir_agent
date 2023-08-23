@@ -11,9 +11,6 @@ defmodule NewRelic.Util.HTTP do
            :httpc.request(:post, request, http_options(), []) do
       {:ok, %{status_code: status_code, headers: headers, body: to_string(body)}}
     end
-
-    # :httpc.request(:post, request, http_options(), [])
-    # |> maybe_log_headers()
   end
 
   def post(url, body, headers) do
@@ -26,10 +23,6 @@ defmodule NewRelic.Util.HTTP do
         {:error, message}
     end
   end
-
-  # defp maybe_log_headers({:ok, {{_, status_code, _}, _headers, body}}) do
-  #   {:ok, %{status_code: status_code, body: to_string(body)}}
-  # end
 
   def get(url, headers \\ [], opts \\ []) do
     headers = Enum.map(headers, fn {k, v} -> {'#{k}', '#{v}'} end)
