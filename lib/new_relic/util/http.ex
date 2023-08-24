@@ -7,9 +7,9 @@ defmodule NewRelic.Util.HTTP do
     headers = [@gzip | Enum.map(headers, fn {k, v} -> {'#{k}', '#{v}'} end)]
     request = {'#{url}', headers, 'application/json', :zlib.gzip(body)}
 
-    with {:ok, {{_, status_code, _}, _headers, body}} <-
+    with {:ok, {{_, status_code, _}, response_headers, body}} <-
            :httpc.request(:post, request, http_options(), []) do
-      {:ok, %{status_code: status_code, headers: headers, body: to_string(body)}}
+      {:ok, %{status_code: status_code, headers: response_headers, body: to_string(body)}}
     end
   end
 
