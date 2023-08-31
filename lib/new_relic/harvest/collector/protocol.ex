@@ -191,8 +191,10 @@ defmodule NewRelic.Harvest.Collector.Protocol do
         )
 
       _ ->
-        NewRelic.log(:error, "#{params[:method]}: (#{status}) #{error} - #{body} - " <>
-        "headers: #{inspect(headers)}"
+        NewRelic.log(
+          :error,
+          "#{params[:method]}: (#{status}) #{error} - #{body} - " <>
+            "headers: #{inspect(headers)}"
         )
     end
   end
